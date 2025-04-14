@@ -18,8 +18,14 @@ filtered_data = data[data['행정구역'] == selected_area]
 age_columns = filtered_data.columns[3:]  # 연령대별 인구 수 열
 age_data = filtered_data[age_columns].values.flatten()
 
-# 1살 단위의 x축 레이블 생성
-ages = [int(age.split('계_')[1].strip('세')) for age in age_columns]
+# 연령대 열 이름에서 정수값 추출
+ages = []
+for age in age_columns:
+    try:
+        age_value = int(age.split('_')[-1].strip('세'))  # '계_'가 아닌 '_ 세' 문자열에서 연령을 추출
+        ages.append(age_value)
+    except (ValueError, IndexError):
+        continue  # 변환에 실패하면 무시
 
 # Plotly를 사용하여 시각화
 fig = go.Figure()
