@@ -2,7 +2,7 @@ import streamlit as st
 import pandas as pd
 
 # 데이터 불러오기
-data = pd.read_csv('age.csv')  # 여기에 파일 경로를 적절히 입력하세요.
+data = pd.read_csv('../age.csv')  # 여기에 파일 경로를 적절히 입력하세요.
 
 # Streamlit 제목
 st.title('한국 인구 통계 시각화')
