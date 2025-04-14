@@ -18,9 +18,13 @@ st.title('한국 인구 통계 시각화')
 연령대_열 = 선택한_데이터.columns[3:]  # 3열 이후의 인구 통계 데이터
 인구수 = 선택한_데이터.iloc[0, 3:].astype(int)
 
+# 연령대 정렬 (숫자로 변환하여 정렬)
+연령대_정렬 = sorted([int(연령대.replace('2025년03월_계_', '').replace('세', '')) for 연령대 in 연령대_열])
+인구수_정렬 = [인구수[연령대_열 == f'2025년03월_계_{연령대}세'][0] for 연령대 in 연령대_정렬]
+
 # Streamlit에서 막대 그래프 시각화
-st.bar_chart(인구수)
+st.bar_chart(pd.Series(인구수_정렬, index=[f'{연대}세' for 연대 in 연령대_정렬]))
 
 # 선택된 연령대의 레이블 설정
 st.write(f"{선택된_지역}의 연령대별 인구 수")
-st.write(pd.DataFrame({'연령대': 연령대_열, '인구 수': 인구수}).set_index('연령대'))
+st.write(pd.DataFrame({'연령대': [f'{연대}세' for 연대 in 연령대_정렬], '인구 수': 인구수_정렬}).set_index('연령대'))
