@@ -1,6 +1,6 @@
 import streamlit as st
 import pandas as pd
-import matplotlib.pyplot as plt
+import plotly.graph_objects as go
 
 # 데이터 로드
 data = pd.read_csv('age.csv')
@@ -18,21 +18,28 @@ filtered_data = data[data['행정구역'] == selected_area]
 age_columns = filtered_data.columns[3:]  # 연령대별 인구 수 열
 age_data = filtered_data[age_columns].values.flatten()
 
-# 5세 단위로 x축 레이블 수정
-filtered_age_columns = [age for age in age_columns if age.endswith('세') and int(age.split('계_')[1].strip('세')) % 5 == 0]
+# 1살 단위의 x축 레이블 생성
+ages = [int(age.split('계_')[1].strip('세')) for age in age_columns]
 
-# 해당 5세 단위의 데이터만 추출
-filtered_age_data = [age_data[i] for i, age in enumerate(age_columns) if age.endswith('세') and int(age.split('계_')[1].strip('세')) % 5 == 0]
+# Plotly를 사용하여 시각화
+fig = go.Figure()
 
-# 시각화
-st.write(f"{selected_area}의 연령대별 인구 수:")
-fig, ax = plt.subplots()
-ax.bar(filtered_age_columns, filtered_age_data)
-ax.set_xlabel("연령대")
-ax.set_ylabel("인구 수")
-ax.set_title(f"{selected_area}의 연령대별 인구 수")
-plt.xticks(rotation=45)
-plt.tight_layout()
+# 바 차트 추가
+fig.add_trace(go.Bar(
+    x=ages,  # x축: 연령대
+    y=age_data,  # y축: 인구 수
+    hoverinfo='text',
+    text=[f"{age}세: {population}명" for age, population in zip(ages, age_data)],  # 마우스를 올렸을 때 보여줄 텍스트
+))
 
-# 그래프 출력
-st.pyplot(fig)
+# 레이아웃 설정
+fig.update_layout(
+    title=f"{selected_area}의 연령대별 인구 수",
+    xaxis_title="연령대",
+    yaxis_title="인구 수",
+    xaxis_tickvals=[age for age in ages if age % 5 == 0],  # x축 레이블을 5세 단위로 표시
+    xaxis_ticktext=[f"{age}세" for age in ages if age % 5 == 0],  # x축 텍스트
+)
+
+# 스트림릿에서 그래프 출력
+st.plotly_chart(fig)
