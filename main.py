@@ -26,15 +26,28 @@ age_labels = [f"{i}세" for i in range(100)] + ['100세 이상']
 full_population = list(age_population) + [age_population_100_plus]
 
 # Matplotlib를 이용한 시각화
-plt.figure(figsize=(12, 6))
-plt.bar(age_labels, full_population, color='skyblue')
-plt.title(f'{selected_area} 연령대별 인구 수', fontsize=16, fontweight='bold')
+plt.figure(figsize=(14, 7))
+bars = plt.bar(age_labels, full_population, color='skyblue', edgecolor='black')
+
+# 그래프 제목 및 축 레이블
+plt.title(f'{selected_area} 연령대별 인구 수', fontsize=18, fontweight='bold')
 plt.xlabel('연령대', fontsize=14)
 plt.ylabel('인구 수', fontsize=14)
+
+# X축 레이블 회전 조정
 plt.xticks(rotation=45, fontsize=10)
+
+# Y축 그리드 추가
+plt.grid(axis='y', linestyle='--', alpha=0.7)
+
+# 막대에 수치 표시
+for bar in bars:
+    yval = bar.get_height()
+    plt.text(bar.get_x() + bar.get_width()/2, yval + 100, int(yval), ha='center', fontsize=9)
 
 # Streamlit에서 Matplotlib 그래프 표시
 st.pyplot(plt)
 
 # 빈 차트 초기화
 plt.clf()
+
