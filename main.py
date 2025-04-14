@@ -7,7 +7,7 @@ data = pd.read_csv(file_path)
 
 # Streamlit 애플리케이션
 def run_app():
-    st.title('2025년 3월 한국 인구 통계 데이터 분석')
+    st.title('2025년 3월 한국 인구 통계 데이터 분석!')
 
     # 사이드바에서 행정구역 선택
     st.sidebar.header("데이터 선택")
