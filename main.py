@@ -2,32 +2,32 @@ import streamlit as st
 import pandas as pd
 
 # 데이터 불러오기
-data = pd.read_csv('age.csv')  # 여기에 파일 경로를 적절히 입력하세요.
+file_path = 'age.csv'  # 파일 경로를 올바르게 설정해주세요.
+data = pd.read_csv(file_path)
 
-# Streamlit 제목
-st.title('한국 인구 통계 시각화')
+# 스트림릿 애플리케이션 코드
+def run_app():
+    st.title('2025년 3월 한국 인구 통계 데이터 분석')
 
-# 지역 선택 (드롭다운)
-지역들 = data['행정구역'].unique()
-선택된_지역 = st.selectbox('지역을 선택하세요:', 지역들)
+    # 데이터 선택
+    st.sidebar.header("데이터 선택")
+    selected_region = st.sidebar.selectbox("행정구역을 선택하세요", data['행정구역'].unique())
 
-# 선택한 지역의 데이터 필터링
-선택한_데이터 = data[data['행정구역'] == 선택된_지역]
+    # 선택한 지역의 데이터 필터링
+    region_data = data[data['행정구역'] == selected_region].iloc[:, 3:]  # 연령대별 데이터 추출
 
-# 연령대 데이터 추출
-연령대_열 = 선택한_데이터.columns[3:]  # 3열 이후의 인구 통계 데이터
-인구수 = 선택한_데이터.iloc[0, 3:].astype(int)
+    # 연령대 이름 정의
+    age_labels = [f"{i}세" for i in range(0, 101)] + ['100세 이상']
 
-# 연령대 이름에서 숫자만 추출하여 정렬
-연령대_정리 = [int(연대.replace('2025년03월_계_', '').replace('세', '').replace('이상', '').strip()) for 연대 in 연령대_열]
-연령대_정렬 = sorted(set(연령대_정리))  # 중복 제거 및 정렬
+    # 연령대별 인구 수를 데이터프레임으로 변환
+    population_counts = region_data.values.flatten()
+    population_df = pd.DataFrame({
+        '연령대': age_labels,
+        '인구수': population_counts
+    })
 
-# 인구 수를 정렬된 연령대에 맞추어 정리
-인구수_정렬 = [인구수[연령대_열 == f'2025년03월_계_{연대}세'][0] if 연대 < 100 else 인구수[연령대_열 == '2025년03월_계_100세 이상'][0] for 연대 in 연령대_정렬]
+    # Streamlit의 바 차트로 시각화
+    st.bar_chart(population_df.set_index('연령대'))
 
-# Streamlit에서 막대 그래프 시각화
-st.bar_chart(pd.Series(인구수_정렬, index=[f'{연대}세' for 연대 in 연령대_정렬]))
-
-# 선택된 연령대의 레이블 설정
-st.write(f"{선택된_지역}의 연령대별 인구 수")
-st.write(pd.DataFrame({'연령대': [f'{연대}세' for 연대 in 연령대_정렬], '인구 수': 인구수_정렬}).set_index('연령대'))
+if __name__ == "__main__":
+    run_app()
