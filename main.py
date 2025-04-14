@@ -2,47 +2,23 @@ import streamlit as st
 import pandas as pd
 
 # 데이터 불러오기
-file_path = 'age.csv'  # ← 여기에 실제 CSV 파일 경로 입력
-data = pd.read_csv(file_path)
+data = pd.read_csv('age.csv')
 
-# 애플리케이션 본문
-def run_app():
-    st.title('2025년 3월 한국 인구 통계 데이터 분석')
+# Streamlit 제목
+st.title('행정구역별 인구 시각화')
 
-    # 사이드바 - 행정구역 선택
-    st.sidebar.header("데이터 선택")
-    selected_region = st.sidebar.selectbox("행정구역을 선택하세요", data['행정구역'].unique())
+# 행정구역 선택
+selected_area = st.selectbox('행정구역을 선택하세요:', data['행정구역'].unique())
 
-    # 연령대 열만 추출 ('2025년03월_계_0세' ~ '2025년03월_계_100세 이상')
-    age_columns = [col for col in data.columns if '2025년03월_계_' in col and '세' in col]
+# 선택된 행정구역의 데이터 필터링
+filtered_data = data[data['행정구역'] == selected_area]
 
-    # 연령대 열 이름 정렬 (0세 ~ 100세 이상)
-    age_columns_sorted = sorted(
-        age_columns,
-        key=lambda x: int(x.split('_')[-1].replace('세 이상', '100').replace('세', ''))
-    )
+# 0세부터 100세 이상의 인구 수 데이터 추출
+age_population = filtered_data.iloc[0, 3:104].values  # 3번 인덱스부터 103번 인덱스까지
+age_labels = [f"{i}세" for i in range(101)] + ['100세 이상']
 
-    # 선택한 지역의 연령대 데이터만 추출
-    region_data = data[data['행정구역'] == selected_region][age_columns_sorted]
+# Streamlit의 바 차트 시각화
+st.bar_chart(age_population, x=age_labels, width=700, height=400)
 
-    # 연령대 이름 리스트 (ex. '0세', '1세', ..., '100세 이상')
-    age_labels = [col.split('_')[-1] for col in age_columns_sorted]
-
-    # 인구 수 데이터
-    population_counts = region_data.values.flatten()
-
-    # 데이터프레임 생성
-    population_df = pd.DataFrame({
-        '연령대': age_labels,
-        '인구수': population_counts
-    })
-
-    # 결측값은 0으로 처리
-    population_df['인구수'] = population_df['인구수'].fillna(0)
-
-    # 차트 출력
-    st.bar_chart(population_df.set_index('연령대'))
-
-# 메인 실행
-if __name__ == "__main__":
-    run_app()
+# 연령대별 인구 수 제목
+st.write(f'{selected_area}의 연령대별 인구 수')
