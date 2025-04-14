@@ -1,5 +1,7 @@
 import streamlit as st
 import pandas as pd
+import matplotlib.pyplot as plt
+from matplotlib import font_manager
 
 # 데이터 불러오기
 data = pd.read_csv('age.csv')
@@ -20,14 +22,19 @@ age_population_100_plus = filtered_data.iloc[0, 103]  # 100세 이상 인구 수
 # 연령대 라벨 생성
 age_labels = [f"{i}세" for i in range(100)] + ['100세 이상']
 
-# 데이터프레임 생성
-age_data = pd.DataFrame({
-    '연령대': age_labels,
-    '인구 수': list(age_population) + [age_population_100_plus]
-})
+# 인구 수 배열 생성
+full_population = list(age_population) + [age_population_100_plus]
 
-# Streamlit에서 바 차트 시각화
-st.bar_chart(age_data.set_index('연령대'))
+# Matplotlib를 이용한 시각화
+plt.figure(figsize=(12, 6))
+plt.bar(age_labels, full_population, color='skyblue')
+plt.title(f'{selected_area} 연령대별 인구 수', fontsize=16, fontweight='bold')
+plt.xlabel('연령대', fontsize=14)
+plt.ylabel('인구 수', fontsize=14)
+plt.xticks(rotation=45, fontsize=10)
 
-# 연령대별 인구 수 제목
-st.write(f'{selected_area}의 연령대별 인구 수')
+# Streamlit에서 Matplotlib 그래프 표시
+st.pyplot(plt)
+
+# 빈 차트 초기화
+plt.clf()
