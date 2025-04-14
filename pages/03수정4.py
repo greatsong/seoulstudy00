@@ -18,14 +18,20 @@ filtered_data = data[data['행정구역'] == selected_area]
 age_columns = filtered_data.columns[3:]  # 연령대별 인구 수 열
 age_data = filtered_data[age_columns].values.flatten()
 
+# 5세 단위로 x축 레이블 수정
+filtered_age_columns = [age for age in age_columns if age.endswith('세') and int(age.split('계_')[1].strip('세')) % 5 == 0]
+
+# 해당 5세 단위의 데이터만 추출
+filtered_age_data = [age_data[i] for i, age in enumerate(age_columns) if age.endswith('세') and int(age.split('계_')[1].strip('세')) % 5 == 0]
+
 # 시각화
 st.write(f"{selected_area}의 연령대별 인구 수:")
 fig, ax = plt.subplots()
-ax.bar(age_columns, age_data)
+ax.bar(filtered_age_columns, filtered_age_data)
 ax.set_xlabel("연령대")
 ax.set_ylabel("인구 수")
 ax.set_title(f"{selected_area}의 연령대별 인구 수")
-plt.xticks(rotation=90)
+plt.xticks(rotation=45)
 plt.tight_layout()
 
 # 그래프 출력
