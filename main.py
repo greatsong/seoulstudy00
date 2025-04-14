@@ -5,7 +5,6 @@ import koreanize_matplotlib
 
 # 데이터 불러오기
 data = pd.read_csv('age.csv')
-
 # Streamlit 제목
 st.title('행정구역별 인구 시각화')
 
@@ -25,12 +24,29 @@ age_labels = [f"{i}세" for i in range(100)] + ['100세 이상']
 # 인구 수 배열 생성
 full_population = list(age_population) + [age_population_100_plus]
 
+# 슬라이더를 사용하여 범위 선택
+min_age = 0
+max_age = 100
+
+age_range = st.slider(
+    '인구 수를 보고 싶은 연령대 선택하기:',
+    min_value=min_age,
+    max_value=max_age,
+    value=(0, 100),
+    step=1
+)
+
+# 선택한 연령대 범위에 따른 인구 수 필터링
+filter_indices = range(age_range[0], age_range[1] + 1)
+filtered_labels = [age_labels[i] for i in filter_indices]
+filtered_population = [full_population[i] for i in filter_indices]
+
 # Matplotlib를 이용한 시각화
 plt.figure(figsize=(14, 7))
-bars = plt.bar(age_labels, full_population, color='skyblue', edgecolor='black')
+bars = plt.bar(filtered_labels, filtered_population, color='skyblue', edgecolor='black')
 
 # 그래프 제목 및 축 레이블
-plt.title(f'{selected_area} 연령대별 인구 수', fontsize=18, fontweight='bold')
+plt.title(f'{selected_area} 연령대별 인구 수 ({age_range[0]}세 ~ {age_range[1]}세)', fontsize=18, fontweight='bold')
 plt.xlabel('연령대', fontsize=14)
 plt.ylabel('인구 수', fontsize=14)
 
@@ -50,4 +66,3 @@ st.pyplot(plt)
 
 # 빈 차트 초기화
 plt.clf()
-
