@@ -29,8 +29,14 @@ def run_app():
             '인구수': population_counts
         })
 
-        # 유효하지 않은 인구 수치를 0으로 처리
+        # 인구 수치가 결측치인 경우 0으로 처리
         population_df['인구수'] = population_df['인구수'].fillna(0)
+
+        # 연령대에 대한 정렬 작업
+        population_df['연령대 순서'] = population_df['연령대'].apply(
+            lambda x: int(x[:-1]) if x != '100세 이상' else 100
+        )
+        population_df = population_df.sort_values(by='연령대 순서')
 
         # Streamlit의 바 차트로 시각화
         st.bar_chart(population_df.set_index('연령대'))
