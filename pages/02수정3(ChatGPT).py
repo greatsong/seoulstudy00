@@ -5,7 +5,6 @@ import pandas as pd
 df = pd.read_csv("age.csv")
 
 # 전처리
-df = df.copy()
 df = df.rename(columns={df.columns[0]: '행정구역'})
 age_columns = [col for col in df.columns if '세' in col]
 
@@ -24,13 +23,17 @@ age_data.columns = ['인구수']
 age_data = age_data.reset_index()
 age_data.columns = ['연령_원본', '인구수']
 
-# 연령 텍스트에서 숫자만 추출, '100세 이상'은 100으로 처리
-age_data['연령'] = age_data['연령_원본'].str.extract(r'(\d+세|100세 이상)')[0]
+# ✅ 연령 텍스트 정제: '2025년03월_계_0세' → '0세', '100세 이상'
+age_data['연령'] = age_data['연령_원본'].str.extract(r'_(\d+세|100세 이상)$')[0]
+
+# ✅ 정렬용 숫자 추출: '0세' → 0, '100세 이상' → 100
 age_data['연령숫자'] = age_data['연령'].apply(lambda x: int(x.replace('세', '').replace('이상', '')))
 
 # 숫자 순 정렬 후 시각화
 age_data = age_data.sort_values(by='연령숫자')
+
+# 📊 바 차트 출력
 st.bar_chart(data=age_data, x='연령', y='인구수', use_container_width=True)
 
 # 🎉 마무리 멘트
-st.markdown("🧠 Tip: **고령화 현상**을 확인하거나 **유소년 인구** 비율을 지역별로 비교해보세요!")
+st.markdown("📌 **팁:** 고령화나 유소년 인구비율을 비교하면서 지역 간 특성을 파악해보세요!")
