@@ -3,7 +3,7 @@ import pandas as pd
 import plotly.graph_objects as go
 
 # 데이터 로드
-data = pd.read_csv('/path/to/your/age.csv')  # 실제로는 올바른 파일 경로를 입력해야 합니다.
+data = pd.read_csv('age.csv')  # 실제로는 올바른 파일 경로를 입력해야 합니다.
 
 # 스트림릿 제목
 st.title("👶 만 16~18세 인구 수 비교")
