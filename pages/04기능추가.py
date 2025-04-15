@@ -3,7 +3,7 @@ import pandas as pd
 import plotly.graph_objects as go
 
 # 데이터 로드
-data = pd.read_csv('age.csv')  # 여기서 'age.csv'는 업로드한 파일 경로로 수정해야 합니다.
+data = pd.read_csv('/path/to/your/age.csv')  # 실제로는 올바른 파일 경로를 입력해야 합니다.
 
 # 스트림릿 제목
 st.title("👶 만 16~18세 인구 수 비교")
@@ -11,11 +11,13 @@ st.title("👶 만 16~18세 인구 수 비교")
 # 행정구역 선택
 selected_area = st.selectbox("행정구역을 선택하세요:", data['행정구역'].unique())
 
-# 선택한 행정구역의 인구 수 추출
+# 만 16~18세에 해당하는 열 이름을 정의합니다.
 age_selectors = ['2025년03월_계_16세', '2025년03월_계_17세', '2025년03월_계_18세']
+
+# 선택한 행정구역의 인구 수 추출
 selected_population = data.loc[data['행정구역'] == selected_area, age_selectors]
 
-# 선택된 행정구역의 인구 수가 있는지 확인하고 시각화
+# 선택된 행정구역의 인구 수가 있는지 확인
 if not selected_population.empty:
     selected_population = selected_population.values.flatten()
 
