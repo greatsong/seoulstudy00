@@ -18,7 +18,7 @@ selected_population = data.loc[data['행정구역'] == selected_area, age_select
 
 # 선택된 행정구역의 인구 수가 있는지 확인
 if not selected_population.empty:
-selected_population = selected_population.values.flatten()
+    selected_population = selected_population.values.flatten()
 
 # 다른 행정구역의 인구 수 추출
 other_populations = data.loc[data['행정구역'] != selected_area, age_selectors]
